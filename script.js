@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { loadAssets } from "./asset_loader.js";
 
 const ZoomInShader = {
   uniforms: {
@@ -56,6 +57,24 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, -0.001);
 controls.update();
 
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2.5);
+scene.add(hemiLight);
+
+let model;
+
+loadAssets().then((_model) => {
+  _model.scale.setScalar(1.4);
+  scene.add(_model);
+  model = _model;
+  _model.position.set(3, -3, -3);
+  _model.traverse((child) => {
+    if (child.isMesh && child.material.isMeshStandardMaterial) {
+      child.material.envMapIntensity = 1.5;
+      child.material.needsUpdate = true;
+    }
+  });
+});
+
 // Load cube textures
 const loader = new THREE.CubeTextureLoader();
 const map1 = [
@@ -79,6 +98,7 @@ let cubeTexture2 = loader.load(map2);
 let currentMap = 1;
 let cubeTexture = cubeTexture1;
 scene.background = cubeTexture;
+scene.environment = cubeTexture;
 
 // Add reflective sphere and ring
 const shinyMaterial = new THREE.MeshPhysicalMaterial({
@@ -112,9 +132,11 @@ function switchPosition(flag) {
   if (flag) {
     ring.position.set(0, -1.5, -5.2);
     sphere.position.set(5, -1.5, -15.2);
+    model.position.z = -3;
   } else {
     ring.position.set(0, -1.5, 5.2);
     sphere.position.set(5, -1.5, 0);
+    model.position.z = 3;
   }
 }
 

@@ -12,7 +12,54 @@
     </style>
 </head>
 <body>
-    
+    <div class="ui-modal">
+        <div class="ui-modal-content">
+            <div class="ui-modal-header">
+                <span class="ui-modal-title">Silver Buffalo</span>
+                <span class="ui-modal-rating">&#11088;&#11088;&#11088;&#11088;&#11088; <span class="ui-modal-reviews">237</span></span>
+                <button class="ui-modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="ui-modal-desc">
+                Silver Buffalo Wicked Elphaba Not Your Basic Witch Ombre Stainless Steel Tumbler with Handle and Straw, Fits in Standard Cup Holder, 40 Ounces
+            </div>
+            <div class="ui-modal-gallery">
+                <img class="ui-modal-mainimg" src="https://picsum.photos/id/1011/200/200" alt="main product" />
+                <div class="ui-modal-thumbs">
+                    <img src="https://picsum.photos/id/1011/40/40" />
+                    <img src="https://picsum.photos/id/1012/40/40" />
+                    <img src="https://picsum.photos/id/1013/40/40" />
+                    <img src="https://picsum.photos/id/1014/40/40" />
+                    <img src="https://picsum.photos/id/1015/40/40" />
+                </div>
+            </div>
+            <div class="ui-modal-options">
+                <span class="ui-modal-color-label">Color: <b>Wicked Elphaba Not Your Basic Witch</b></span>
+                <div class="ui-modal-color-choices">
+                    <img src="https://picsum.photos/id/1021/40/40" />
+                    <img src="https://picsum.photos/id/1022/40/40" />
+                    <img src="https://picsum.photos/id/1023/40/40" />
+                    <img src="https://picsum.photos/id/1024/40/40" />
+                    <img src="https://picsum.photos/id/1025/40/40" />
+                </div>
+            </div>
+            <div class="ui-modal-price">
+                <span class="ui-modal-price-main">$29<sup>99</sup></span>
+                <span class="ui-modal-price-typical">Typical: <s>$34.99</s></span>
+            </div>
+            <div class="ui-modal-stock">In Stock</div>
+            <div class="ui-modal-delivery">Delivery <b>Friday, June 13</b>. Order within <span style="color: #008a00">5 hrs 16 mins</span></div>
+            <div class="ui-modal-actions">
+                <label for="ui-modal-qty">Qty: </label>
+                <select id="ui-modal-qty">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                </select>
+                <button class="ui-modal-add">Add to cart</button>
+                <button class="ui-modal-details">View full details</button>
+            </div>
+        </div>
+    </div>
 </body>
 <script type="importmap">
     {
@@ -23,4 +70,212 @@
     }
     </script>
     <script type="module" src="./script.js"></script>
+<style>
+    .ui-modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 370px;
+        height: 100vh;
+        background: #fff;
+        box-shadow: -2px 0 16px rgba(0,0,0,0.12);
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        animation: slideInRight 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes slideInRight {
+        from { right: -400px; opacity: 0; }
+        to { right: 0; opacity: 1; }
+    }
+    .ui-modal-content {
+        padding: 24px 20px 20px 20px;
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+    .ui-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+    .ui-modal-title {
+        color: #222;
+    }
+    .ui-modal-rating {
+        color: #e6a700;
+        font-size: 1rem;
+        font-weight: normal;
+    }
+    .ui-modal-reviews {
+        color: #222;
+        font-size: 0.95em;
+        margin-left: 2px;
+    }
+    .ui-modal-desc {
+        color: #444;
+        font-size: 0.98rem;
+        margin-bottom: 12px;
+    }
+    .ui-modal-gallery {
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 12px 0 8px 0;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .ui-modal-mainimg {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid #eee;
+    }
+    .ui-modal-thumbs {
+        display: flex;
+        gap: 6px;
+    }
+    .ui-modal-thumbs img {
+        width: 36px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: border 0.2s;
+    }
+    .ui-modal-thumbs img:hover {
+        border: 1.5px solid #222;
+    }
+    .ui-modal-options {
+        margin: 10px 0 8px 0;
+    }
+    .ui-modal-color-label {
+        font-size: 0.97rem;
+        color: #222;
+    }
+    .ui-modal-color-choices {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+    }
+    .ui-modal-color-choices img {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        transition: border 0.2s;
+    }
+    .ui-modal-color-choices img:hover {
+        border: 1.5px solid #222;
+    }
+    .ui-modal-price {
+        font-size: 1.3rem;
+        color: #222;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+    }
+    .ui-modal-price-main {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    .ui-modal-price-typical {
+        color: #888;
+        font-size: 1rem;
+    }
+    .ui-modal-stock {
+        color: #008a00;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .ui-modal-delivery {
+        color: #444;
+        font-size: 0.97rem;
+        margin-bottom: 10px;
+    }
+    .ui-modal-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+    }
+    .ui-modal-actions label {
+        font-size: 0.97rem;
+        color: #222;
+    }
+    .ui-modal-actions select {
+        padding: 2px 6px;
+        font-size: 1rem;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .ui-modal-add {
+        background: #ffd814;
+        color: #222;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 18px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .ui-modal-add:hover {
+        background: #f7ca00;
+    }
+    .ui-modal-details {
+        background: #fff;
+        color: #222;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 8px 14px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s, border 0.2s;
+    }
+    .ui-modal-details:hover {
+        background: #f3f3f3;
+        border: 1.5px solid #222;
+    }
+    .ui-modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #888;
+        cursor: pointer;
+        margin-left: 12px;
+        margin-right: -8px;
+        margin-top: -6px;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+    .ui-modal-close:hover {
+        color: #222;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var closeBtn = document.querySelector('.ui-modal-close');
+        var modal = document.querySelector('.ui-modal');
+        if(closeBtn && modal) {
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+    });
+</script>
 </html>

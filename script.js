@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CameraControls } from "./cameraControls.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
-import { loadAssets } from "./asset_loader.js";
+import { loadAssets, addControls } from "./asset_loader.js";
 
 const ZoomInShader = {
   uniforms: {
@@ -53,6 +54,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 
+const cameraControls = new CameraControls(camera, renderer.domElement);
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, -0.001);
 controls.update();
@@ -62,11 +65,12 @@ scene.add(hemiLight);
 
 let model;
 
-loadAssets().then((_model) => {
-  _model.scale.setScalar(1.4);
+loadAssets(camera).then((_model) => {
+  _model.scale.setScalar(1);
   scene.add(_model);
   model = _model;
-  _model.position.set(3, -3, -3);
+  // addControls(model);
+  _model.position.set(1.5, -1.5, 0);
   _model.traverse((child) => {
     if (child.isMesh && child.material.isMeshStandardMaterial) {
       child.material.envMapIntensity = 1.5;
@@ -132,11 +136,11 @@ function switchPosition(flag) {
   if (flag) {
     ring.position.set(0, -1.5, -5.2);
     sphere.position.set(5, -1.5, -15.2);
-    model.position.z = -3;
+    model.position.z = 0;
   } else {
     ring.position.set(0, -1.5, 5.2);
     sphere.position.set(5, -1.5, 0);
-    model.position.z = 3;
+    model.position.z = 5.2;
   }
 }
 
@@ -204,7 +208,6 @@ function onMouseMove(event) {
 
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
   composer.render();
 }
 

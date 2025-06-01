@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CameraControls } from "./cameraControls.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -10,7 +11,7 @@ const ZoomInShader = {
   uniforms: {
     tDiffuse: { value: null },
     zoom: { value: 1.0 },
-    time: { value: 0.0 }, 
+    time: { value: 0.0 },
     center: { value: new THREE.Vector2(0.5, 0.5) }, // Center of screen
   },
   vertexShader: `
@@ -142,23 +143,26 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, -0.001);
 controls.update();
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2.5);
-scene.add(hemiLight);
+// const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2.5);
+// scene.add(hemiLight);
 
 let model;
 
 loadAssets(camera).then((_model) => {
   _model.scale.setScalar(1);
+
   scene.add(_model);
   model = _model;
   // addControls(model);
   _model.position.set(1.5, -1.5, 0);
   _model.traverse((child) => {
     if (child.isMesh && child.material.isMeshStandardMaterial) {
-      child.material.envMapIntensity = 1.5;
+      child.material.envMap = scene.background; // Set the environment map for reflections
+      child.material.side = THREE.DoubleSide; // Ensure both sides are rendered
+      child.material.envMapIntensity = 2;
       child.material.needsUpdate = true;
     }
-  });
+  })
 });
 
 // Load cube textures
@@ -203,12 +207,53 @@ scene.add(sphere);
 const ringGeometry = new THREE.CircleGeometry(0.3, 32);
 ringGeometry.rotateX(-Math.PI / 2);
 const ringMaterial = new THREE.MeshBasicMaterial({
-  color: 0xff9900,
+  color: "white",
   side: THREE.DoubleSide,
 });
+ringMaterial.map = new THREE.TextureLoader().load("./assets/ring/ring-pressed.png");
+ringMaterial.transparent = false;
 const ring = new THREE.Mesh(ringGeometry, ringMaterial);
 ring.position.set(0, -1.5, -5.2);
 scene.add(ring);
+
+let arrowMixer;
+let arrowModel;
+
+// Add this after the ring is created and added to the scene
+const gltfLoader = new GLTFLoader();
+gltfLoader.load(
+  "./assets/directional_arrow.glb",
+  (gltf) => {
+    arrowModel = gltf.scene;
+    arrowModel.scale.set(0.05, 0.05, 0.05); // Adjust scale as needed
+    // Position just above the ring
+    arrowModel.position.set(
+      ring.position.x,
+      ring.position.y + 0.15, // adjust height as needed
+      ring.position.z
+    );
+    scene.add(arrowModel);
+    console.log("Directional arrow model loaded:", arrowModel);
+    arrowModel.traverse((child) => {
+      if (child.isMesh && child.material.isMeshStandardMaterial) {
+        child.material.envMap = scene.background; // Set the environment map for reflections
+        child.material.side = THREE.DoubleSide; // Ensure both sides are rendered
+        child.material.envMapIntensity = 4;
+        child.material.needsUpdate = true;
+      }
+    })
+    // Animation
+    if (gltf.animations && gltf.animations.length > 0) {
+      arrowMixer = new THREE.AnimationMixer(arrowModel);
+      const action = arrowMixer.clipAction(gltf.animations[0]);
+      action.play();
+    }
+  },
+  undefined,
+  (error) => {
+    console.error("Error loading directional_arrow.glb:", error);
+  }
+);
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -268,7 +313,7 @@ let flag = true;
 function transitionToNewMap() {
   transitioning = true;
   flag = !flag;
-  
+
   zoomPass.enabled = true;
   zoomPass.uniforms.time.value = 0.0;
   zoomPass.uniforms.center.value.set(0.5, 0.5); // Center of screen
@@ -281,7 +326,7 @@ function transitionToNewMap() {
     // Switch scenes at peak blur (time = 0.5)
     if (timeValue >= 0.5 && timeValue < 0.52) {
       switchPosition(flag);
-      
+
       if (currentMap === 1) {
         cubeTexture = cubeTexture2;
         currentMap = 2;
@@ -313,6 +358,29 @@ function onClick(event) {
   if (intersects.length > 0 && !transitioning) {
     transitionToNewMap();
   }
+
+  // Dispose arrow model and its resources
+  if (arrowModel) {
+    scene.remove(arrowModel);
+    arrowModel.traverse((child) => {
+      if (child.isMesh) {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => mat.dispose());
+          } else {
+            child.material.dispose();
+          }
+        }
+      }
+    });
+    arrowModel = null;
+  }
+  if (arrowMixer) {
+    arrowMixer.stopAllAction();
+    arrowMixer.uncacheRoot(arrowModel);
+    arrowMixer = null;
+  }
 }
 
 function onMouseMove(event) {
@@ -327,6 +395,7 @@ function onMouseMove(event) {
 
 function animate() {
   requestAnimationFrame(animate);
+  if (arrowMixer) arrowMixer.update(1 / 90); // update animation
   composer.render();
 }
 
